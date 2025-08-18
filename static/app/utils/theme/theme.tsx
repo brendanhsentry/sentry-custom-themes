@@ -1335,6 +1335,7 @@ export const lightTheme = {
     border: 'transparent',
     superuser: '#880808',
   },
+  isCustomTheme: false,
 };
 
 /**
@@ -1380,6 +1381,7 @@ export const darkTheme: typeof lightTheme = {
     border: darkAliases.border,
     superuser: '#620808',
   },
+  isCustomTheme: false,
 };
 
 /**
@@ -1547,6 +1549,7 @@ export function createCustomTheme(
       background: color(customColor).darken(0.8).hex(),
       gradient: `linear-gradient(294.17deg, ${color(customColor).darken(0.8).hex()} 35.57%, ${color(customColor).darken(0.6).hex()} 92.42%, ${color(customColor).darken(0.6).hex()} 92.42%)`,
     },
+    isCustomTheme: true,
   };
 }
 
