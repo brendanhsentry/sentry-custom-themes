@@ -36,10 +36,10 @@ export function useThemeSwitcher(): DO_NOT_USE_ChonkTheme | Theme {
   let theme: Theme | DO_NOT_USE_ChonkTheme;
 
   // Check if user has selected custom theme and provided a custom color
-  if (userTheme === 'custom' && customTheme) {
+  if (customTheme && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(customTheme)) {
     // Create custom theme based on the user's color choice
     // Use current config.theme to determine if it should be light or dark base
-    const baseTheme = config.theme === 'dark' ? 'dark' : 'light';
+    const baseTheme = userTheme === 'dark' ? 'dark' : 'light';
     theme = createCustomTheme(customTheme, baseTheme);
   } else {
     // Default theme logic
