@@ -90,7 +90,12 @@ export function SecondarySidebar() {
 }
 
 const SecondarySidebarWrapper = styled(NavTourElement)`
-  background: ${p => (p.theme.isChonk ? p.theme.background : p.theme.surface200)};
+  background: ${p =>
+    p.theme.isChonk
+      ? p.theme.background
+      : p.theme.isCustomTheme
+        ? p.theme.purple100
+        : p.theme.surface200};
   border-right: 1px solid
     ${p => (p.theme.isChonk ? p.theme.border : p.theme.translucentGray200)};
   position: relative;

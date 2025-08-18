@@ -11,6 +11,45 @@ import type {CSSProperties} from 'react';
 import {css} from '@emotion/react';
 import color from 'color';
 
+/**
+ * Generates purple color variants (100-400) based on a single purple400 hex code
+ * @param purple400Hex The darkest purple color as a hex string (e.g., '#6559C5')
+ * @param options Optional configuration for alpha values and lightness adjustments
+ * @returns Object with purple100, purple200, purple300, purple400 properties
+ */
+function generatePurpleColors(
+  purple400Hex: string,
+  options: {
+    purple100Alpha?: number;
+    purple200Alpha?: number;
+    purple300LightnessIncrease?: number;
+  } = {}
+) {
+  const {
+    purple100Alpha = 0.09,
+    purple200Alpha = 0.5,
+    purple300LightnessIncrease = 0.05,
+  } = options;
+
+  const baseColor = color(purple400Hex);
+
+  // Generate purple300 by slightly lightening purple400
+  const purple300 = baseColor
+    .lightness(baseColor.lightness() + purple300LightnessIncrease * 100)
+    .hex();
+
+  // Use purple300 as the base for rgba calculations for purple200 and purple100
+  const purple300Color = color(purple300);
+  const rgbArray = purple300Color.rgb().array();
+
+  return {
+    purple400: purple400Hex,
+    purple300,
+    purple200: `rgba(${rgbArray.join(', ')}, ${purple200Alpha})`,
+    purple100: `rgba(${rgbArray.join(', ')}, ${purple100Alpha})`,
+  };
+}
+
 // palette generated via: https://gka.github.io/palettes/#colors=444674,69519A,E1567C,FB7D46,F2B712|steps=20|bez=1|coL=1
 const CHART_PALETTE = [
   ['#444674'],
@@ -732,6 +771,9 @@ interface Colors {
 }
 /* eslint-enable typescript-sort-keys/interface */
 
+// Light theme color configurations
+// Dark theme color configurations
+
 const lightColors: Colors = {
   black: '#1D1127',
   white: '#FFFFFF',
@@ -1293,6 +1335,7 @@ export const lightTheme = {
     border: 'transparent',
     superuser: '#880808',
   },
+  isCustomTheme: false,
 };
 
 /**
@@ -1338,7 +1381,86 @@ export const darkTheme: typeof lightTheme = {
     border: darkAliases.border,
     superuser: '#620808',
   },
+  isCustomTheme: false,
 };
+
+/**
+ * Generates a comprehensive color palette from a single custom color
+ * @param customColor - The primary custom color as a hex string
+ * @param isDark - Whether this is for a dark theme
+ */
+function generateCustomColorPalette(customColor: string) {
+  // Create custom purple variants (primary accent color)
+  const purpleColors = generatePurpleColors(customColor);
+
+  return {
+    // Primary accent (purple)
+    purple400: purpleColors.purple400,
+    purple300: purpleColors.purple300,
+    purple200: purpleColors.purple200,
+    purple100: purpleColors.purple100,
+  };
+}
+
+/**
+ * Creates a custom theme by modifying the base theme colors
+ * @param customColor - The hex color to use as the primary custom color
+ * @param baseTheme - The base theme to modify ('light' or 'dark')
+ */
+export function createCustomTheme(
+  customColor: string,
+  baseTheme: 'light' | 'dark' = 'light'
+): Theme {
+  const isDark = baseTheme === 'dark';
+  const base = isDark ? darkTheme : lightTheme;
+  const baseColors = isDark ? darkColors : lightColors;
+
+  // Generate comprehensive custom color palette
+  const customColors = generateCustomColorPalette(customColor);
+
+  // Merge base colors with custom colors
+  const enhancedColors = {
+    ...baseColors,
+    ...customColors,
+  };
+
+  // Generate custom theme components with enhanced colors
+  const customAliases = generateThemeAliases(enhancedColors);
+  const customTokens = generateTokens(enhancedColors);
+
+  return {
+    ...base,
+    type: baseTheme,
+    // Apply custom colors
+    ...customColors,
+    // Regenerate all theme components with custom colors
+    ...customAliases,
+    tokens: customTokens,
+    inverted: {
+      ...base.inverted,
+      tokens: generateTokens(isDark ? lightColors : darkColors),
+    },
+    ...generateThemeUtils(enhancedColors, customAliases),
+    alert: generateAlertTheme(enhancedColors, customAliases),
+    button: generateButtonTheme(enhancedColors, customAliases),
+    tag: generateTagTheme(enhancedColors),
+    level: generateLevelTheme(enhancedColors),
+    // Custom chart colors based on the custom color palette
+    chart: {
+      neutral: enhancedColors.gray200,
+      colors: CHART_PALETTE,
+      getColorPalette: makeChartColorPalette(CHART_PALETTE),
+    },
+    // Update sidebar with custom color accents
+    sidebar: {
+      ...base.sidebar,
+      // Use a darker version of the custom color for sidebar
+      background: color(customColor).darken(0.8).hex(),
+      gradient: `linear-gradient(294.17deg, ${color(customColor).darken(0.8).hex()} 35.57%, ${color(customColor).darken(0.6).hex()} 92.42%, ${color(customColor).darken(0.6).hex()} 92.42%)`,
+    },
+    isCustomTheme: true,
+  };
+}
 
 export type ColorMapping = typeof lightColors;
 export type Color = keyof typeof lightColors;
