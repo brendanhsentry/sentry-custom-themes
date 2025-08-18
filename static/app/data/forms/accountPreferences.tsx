@@ -12,15 +12,39 @@ export const route = '/settings/account/details/';
 // `options` object
 const transformOptions = (data: Record<PropertyKey, unknown>) => ({options: data});
 
+// Transform custom theme data - when customTheme is 'custom', use customThemeColor value
+const transformCustomTheme = (
+  data: Record<PropertyKey, unknown>,
+  context?: {form?: any; model?: any}
+) => {
+  const formData = context?.form || {};
+  const customTheme = formData.customTheme;
+  const customThemeColor = formData.customThemeColor;
+
+  // Create transformed data excluding customThemeColor to avoid duplication
+  const transformedData = Object.fromEntries(
+    Object.entries(data).filter(([key]) => key !== 'customThemeColor')
+  );
+
+  // If customTheme is 'custom', send the hex color as the customTheme value
+  if (customTheme === 'custom' && customThemeColor) {
+    transformedData.customTheme = customThemeColor;
+  } else if (customTheme) {
+    transformedData.customTheme = customTheme;
+  }
+
+  return {options: transformedData};
+};
+
 const formGroups: JsonFormObject[] = [
   {
     // Form "section"/"panel"
-    title: 'Preferences',
+    title: 'Appearance',
     fields: [
       {
         name: 'theme',
         type: 'select',
-        label: t('Theme'),
+        label: t('Color Mode'),
         help: t(
           "Select your theme preference. It can be synced to your system's theme, always light mode, or always dark mode."
         ),
@@ -28,36 +52,67 @@ const formGroups: JsonFormObject[] = [
           {value: 'light', label: t('Light')},
           {value: 'dark', label: t('Dark')},
           {value: 'system', label: t('Default to system')},
-          {value: 'custom', label: t('Custom')},
         ],
         getData: transformOptions,
         onChange: () => {
           removeBodyTheme();
         },
+      },
+      {
+        name: 'customTheme',
+        type: 'select',
+        label: t('Custom Theme'),
+        help: t('Choose default theme or customize with your own color'),
+        options: [
+          {value: 'default', label: t('Default')},
+          {value: 'custom', label: t('Custom')},
+        ],
+        getData: transformCustomTheme,
+      },
+      {
+        name: 'customThemeColor',
+        type: 'string',
+        label: t('Custom Theme Color'),
+        help: t('Enter a custom theme color in hex format (e.g., #ff5722)'),
+        placeholder: '#ff5722',
+        visible: ({model}) => model?.getValue('customTheme') === 'custom',
+        getData: transformCustomTheme, // Use same transform function to ensure both fields trigger the transformation
         validate: ({form}) => {
-          const theme = form?.theme;
           const customTheme = form?.customTheme;
+          const customThemeColor = form?.customThemeColor;
 
-          if (theme === 'custom' && (!customTheme || customTheme.trim() === '')) {
+          if (
+            customTheme === 'custom' &&
+            (!customThemeColor || customThemeColor.trim() === '')
+          ) {
             return [
               [
-                'theme',
-                'Please provide a custom theme input when selecting custom theme',
+                'customThemeColor',
+                'Please provide a hex color when selecting custom theme',
               ],
+            ];
+          }
+
+          // Basic hex color validation
+          if (
+            customTheme === 'custom' &&
+            customThemeColor &&
+            !/^#[0-9A-Fa-f]{6}$/.test(customThemeColor.trim())
+          ) {
+            return [
+              ['customThemeColor', 'Please enter a valid hex color (e.g., #ff5722)'],
             ];
           }
 
           return [];
         },
       },
-      {
-        name: 'customTheme',
-        type: 'string',
-        label: t('Custom Theme Color'),
-        help: t('Enter a custom theme color in hex format'),
-        placeholder: '#000000',
-        getData: transformOptions,
-      },
+    ],
+  },
+  {
+    // Form "section"/"panel"
+    title: 'Preferences',
+    fields: [
       {
         name: 'language',
         type: 'select',
