@@ -1389,70 +1389,9 @@ export const darkTheme: typeof lightTheme = {
  * @param customColor - The primary custom color as a hex string
  * @param isDark - Whether this is for a dark theme
  */
-function generateCustomColorPalette(customColor: string, isDark = false) {
-  const baseColor = color(customColor);
-  const hue = baseColor.hue();
-  const saturation = baseColor.saturationv();
-
-  // Generate complementary and analogous colors
-  const complementaryHue = (hue + 180) % 360;
-  const analogousHue1 = (hue + 30) % 360;
-  const analogousHue2 = (hue - 30 + 360) % 360;
-  const triadicHue1 = (hue + 120) % 360;
-
-  // Adjust saturation and lightness for dark/light themes
-  const adjustedSaturation = isDark
-    ? Math.min(saturation * 0.9, 80)
-    : Math.min(saturation * 1.1, 90);
-
+function generateCustomColorPalette(customColor: string) {
   // Create custom purple variants (primary accent color)
   const purpleColors = generatePurpleColors(customColor);
-
-  // Create custom blue variants (secondary accent - complementary)
-  const blueBase = color
-    .hsv(complementaryHue, adjustedSaturation, isDark ? 65 : 85)
-    .hex();
-  const blueColors = generatePurpleColors(blueBase, {
-    purple100Alpha: 0.09,
-    purple200Alpha: 0.5,
-    purple300LightnessIncrease: 0.05,
-  });
-
-  // Create custom green variants (success color - triadic)
-  const greenBase = color
-    .hsv(triadicHue1, adjustedSaturation * 0.8, isDark ? 60 : 75)
-    .hex();
-  const greenColors = generatePurpleColors(greenBase, {
-    purple100Alpha: 0.11,
-    purple200Alpha: 0.55,
-    purple300LightnessIncrease: 0.05,
-  });
-
-  // Create custom red variants (error color - maintain red hue but adjust saturation)
-  const redBase = color.hsv(0, adjustedSaturation, isDark ? 70 : 80).hex();
-  const redColors = generatePurpleColors(redBase, {
-    purple100Alpha: 0.1,
-    purple200Alpha: 0.5,
-    purple300LightnessIncrease: 0.05,
-  });
-
-  // Create custom yellow variants (warning color - analogous)
-  const yellowBase = color
-    .hsv(analogousHue1, adjustedSaturation * 0.9, isDark ? 75 : 90)
-    .hex();
-  const yellowColors = generatePurpleColors(yellowBase, {
-    purple100Alpha: 0.14,
-    purple200Alpha: 0.7,
-    purple300LightnessIncrease: 0.05,
-  });
-
-  // Create custom pink variants (promotion color - analogous)
-  const pinkBase = color.hsv(analogousHue2, adjustedSaturation, isDark ? 65 : 80).hex();
-  const pinkColors = generatePurpleColors(pinkBase, {
-    purple100Alpha: 0.09,
-    purple200Alpha: 0.5,
-    purple300LightnessIncrease: 0.05,
-  });
 
   return {
     // Primary accent (purple)
@@ -1460,36 +1399,6 @@ function generateCustomColorPalette(customColor: string, isDark = false) {
     purple300: purpleColors.purple300,
     purple200: purpleColors.purple200,
     purple100: purpleColors.purple100,
-
-    // Secondary accent (blue)
-    blue400: blueColors.purple400,
-    blue300: blueColors.purple300,
-    blue200: blueColors.purple200,
-    blue100: blueColors.purple100,
-
-    // Success colors (green)
-    green400: greenColors.purple400,
-    green300: greenColors.purple300,
-    green200: greenColors.purple200,
-    green100: greenColors.purple100,
-
-    // Error colors (red)
-    red400: redColors.purple400,
-    red300: redColors.purple300,
-    red200: redColors.purple200,
-    red100: redColors.purple100,
-
-    // Warning colors (yellow)
-    yellow400: yellowColors.purple400,
-    yellow300: yellowColors.purple300,
-    yellow200: yellowColors.purple200,
-    yellow100: yellowColors.purple100,
-
-    // Promotion colors (pink)
-    pink400: pinkColors.purple400,
-    pink300: pinkColors.purple300,
-    pink200: pinkColors.purple200,
-    pink100: pinkColors.purple100,
   };
 }
 
@@ -1507,7 +1416,7 @@ export function createCustomTheme(
   const baseColors = isDark ? darkColors : lightColors;
 
   // Generate comprehensive custom color palette
-  const customColors = generateCustomColorPalette(customColor, isDark);
+  const customColors = generateCustomColorPalette(customColor);
 
   // Merge base colors with custom colors
   const enhancedColors = {
