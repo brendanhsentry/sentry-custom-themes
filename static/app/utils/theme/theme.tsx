@@ -18,51 +18,31 @@ import color from 'color';
  * @param options Optional configuration for alpha values and lightness adjustments
  * @returns Object with purple100, purple200, purple300, purple400 properties
  */
-function generatePurpleColors(
-  hexColor: string,
-  isDarkMode = false,
-  options: {
-    purple100Alpha?: number;
-    purple200Alpha?: number;
-    purple400LightnessDecrease?: number;
-  } = {}
-) {
-  const {
-    purple100Alpha = 0.2,
-    purple200Alpha = 0.4,
-    purple400LightnessDecrease = 0.5,
-  } = options;
-
+function generatePurpleColors(hexColor: string, isDarkMode = false) {
   const baseColor = color(hexColor);
 
   let purple300: string;
   let purple400: string;
+  let purple200: string;
+  let purple100: string;
 
   if (isDarkMode) {
-    // In dark mode, input color becomes purple400 (darker)
-    purple400 = hexColor;
-    // Generate purple300 by lightening purple400
-    purple300 = baseColor
-      .lightness(baseColor.lightness() + purple400LightnessDecrease * 100)
-      .hex();
-  } else {
-    // In light mode, input color becomes purple300 (lighter)
+    purple400 = baseColor.lightness(baseColor.lightness() + 0.15 * 100).hex();
     purple300 = hexColor;
-    // Generate purple400 by darkening purple300
-    purple400 = baseColor
-      .lightness(baseColor.lightness() - purple400LightnessDecrease * 100)
-      .hex();
+    purple200 = baseColor.lightness(baseColor.lightness() - 0.15 * 100).hex();
+    purple100 = baseColor.lightness(baseColor.lightness() - 0.25 * 100).hex();
+  } else {
+    purple400 = baseColor.lightness(baseColor.lightness() - 0.1 * 100).hex();
+    purple300 = hexColor;
+    purple200 = baseColor.lightness(baseColor.lightness() + 0.3 * 100).hex();
+    purple100 = baseColor.lightness(baseColor.lightness() + 0.4 * 100).hex();
   }
-
-  // Use purple300 as the base for rgba calculations for purple200 and purple100
-  const purple300Color = color(purple300);
-  const rgbArray = purple300Color.rgb().array();
 
   return {
     purple400,
     purple300,
-    purple200: `rgba(${rgbArray.join(', ')}, ${purple200Alpha})`,
-    purple100: `rgba(${rgbArray.join(', ')}, ${purple100Alpha})`,
+    purple200,
+    purple100,
   };
 }
 
