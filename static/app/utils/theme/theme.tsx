@@ -12,38 +12,54 @@ import {css} from '@emotion/react';
 import color from 'color';
 
 /**
- * Generates purple color variants (100-400) based on a single purple400 hex code
- * @param purple400Hex The darkest purple color as a hex string (e.g., '#6559C5')
+ * Generates purple color variants (100-400) based on a single hex code
+ * @param hexColor The base purple color as a hex string (e.g., '#6559C5')
+ * @param isDarkMode Whether the theme is in dark mode - affects which variant gets the input color
  * @param options Optional configuration for alpha values and lightness adjustments
  * @returns Object with purple100, purple200, purple300, purple400 properties
  */
 function generatePurpleColors(
-  purple400Hex: string,
+  hexColor: string,
+  isDarkMode = false,
   options: {
     purple100Alpha?: number;
     purple200Alpha?: number;
-    purple300LightnessIncrease?: number;
+    purple400LightnessDecrease?: number;
   } = {}
 ) {
   const {
-    purple100Alpha = 0.09,
-    purple200Alpha = 0.5,
-    purple300LightnessIncrease = 0.05,
+    purple100Alpha = 0.2,
+    purple200Alpha = 0.4,
+    purple400LightnessDecrease = 0.5,
   } = options;
 
-  const baseColor = color(purple400Hex);
+  const baseColor = color(hexColor);
 
-  // Generate purple300 by slightly lightening purple400
-  const purple300 = baseColor
-    .lightness(baseColor.lightness() + purple300LightnessIncrease * 100)
-    .hex();
+  let purple300: string;
+  let purple400: string;
+
+  if (isDarkMode) {
+    // In dark mode, input color becomes purple400 (darker)
+    purple400 = hexColor;
+    // Generate purple300 by lightening purple400
+    purple300 = baseColor
+      .lightness(baseColor.lightness() + purple400LightnessDecrease * 100)
+      .hex();
+  } else {
+    // In light mode, input color becomes purple300 (lighter)
+    purple300 = hexColor;
+    // Generate purple400 by darkening purple300
+    purple400 = baseColor
+      .lightness(baseColor.lightness() - purple400LightnessDecrease * 100)
+      .hex();
+  }
 
   // Use purple300 as the base for rgba calculations for purple200 and purple100
   const purple300Color = color(purple300);
   const rgbArray = purple300Color.rgb().array();
 
   return {
-    purple400: purple400Hex,
+    purple400,
     purple300,
     purple200: `rgba(${rgbArray.join(', ')}, ${purple200Alpha})`,
     purple100: `rgba(${rgbArray.join(', ')}, ${purple100Alpha})`,
@@ -1389,9 +1405,9 @@ export const darkTheme: typeof lightTheme = {
  * @param customColor - The primary custom color as a hex string
  * @param isDark - Whether this is for a dark theme
  */
-function generateCustomColorPalette(customColor: string) {
+function generateCustomColorPalette(customColor: string, isDark: boolean) {
   // Create custom purple variants (primary accent color)
-  const purpleColors = generatePurpleColors(customColor);
+  const purpleColors = generatePurpleColors(customColor, isDark);
 
   return {
     // Primary accent (purple)
@@ -1416,7 +1432,7 @@ export function createCustomTheme(
   const baseColors = isDark ? darkColors : lightColors;
 
   // Generate comprehensive custom color palette
-  const customColors = generateCustomColorPalette(customColor);
+  const customColors = generateCustomColorPalette(customColor, isDark);
 
   // Merge base colors with custom colors
   const enhancedColors = {
