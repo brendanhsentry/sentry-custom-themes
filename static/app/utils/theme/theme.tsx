@@ -24,7 +24,6 @@ function generatePurpleColors(hexColor: string, isDarkMode = false) {
   const upperBound = isDarkMode ? 50 : 60;
 
   const norm = lowerBound + (baseColor.lightness() * (upperBound - lowerBound)) / 100;
-
   baseColor = baseColor.lightness(norm);
 
   let purple300: string;
@@ -32,14 +31,17 @@ function generatePurpleColors(hexColor: string, isDarkMode = false) {
   let purple200: string;
   let purple100: string;
 
+  const normSaturation =
+    lowerBound + (baseColor.saturationl() * (upperBound - lowerBound)) / 100;
+
   if (isDarkMode) {
     purple400 = baseColor.lightness(baseColor.lightness() + 30).hex();
-    purple300 = baseColor.saturationl(norm).hex();
+    purple300 = baseColor.saturationl(normSaturation).hex();
     purple200 = baseColor.lightness(baseColor.lightness() - 30).hex();
     purple100 = baseColor.lightness(baseColor.lightness() - 40).hex();
   } else {
     purple400 = baseColor.lightness(baseColor.lightness() - 20).hex();
-    purple300 = baseColor.saturationl(norm).hex();
+    purple300 = baseColor.saturationl(normSaturation).hex();
     purple200 = baseColor.lightness(baseColor.lightness() + 30).hex();
     purple100 = baseColor.lightness(baseColor.lightness() + 35).hex();
   }
