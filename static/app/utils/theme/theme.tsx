@@ -20,12 +20,12 @@ import color from 'color';
  */
 function generatePurpleColors(hexColor: string, isDarkMode = false) {
   let baseColor = color(hexColor);
-  const lowerBound = isDarkMode ? 45 : 40;
+  const lowerBound = isDarkMode ? 45 : 45;
   const upperBound = isDarkMode ? 50 : 60;
 
-  baseColor = baseColor.lightness(
-    Math.max(Math.min(baseColor.lightness(), upperBound), lowerBound)
-  );
+  const norm = lowerBound + (baseColor.lightness() * (upperBound - lowerBound)) / 100;
+
+  baseColor = baseColor.lightness(norm);
 
   let purple300: string;
   let purple400: string;
@@ -34,12 +34,12 @@ function generatePurpleColors(hexColor: string, isDarkMode = false) {
 
   if (isDarkMode) {
     purple400 = baseColor.lightness(baseColor.lightness() + 30).hex();
-    purple300 = baseColor.hex();
+    purple300 = baseColor.saturationl(norm).hex();
     purple200 = baseColor.lightness(baseColor.lightness() - 30).hex();
     purple100 = baseColor.lightness(baseColor.lightness() - 40).hex();
   } else {
     purple400 = baseColor.lightness(baseColor.lightness() - 20).hex();
-    purple300 = baseColor.hex();
+    purple300 = baseColor.saturationl(norm).hex();
     purple200 = baseColor.lightness(baseColor.lightness() + 30).hex();
     purple100 = baseColor.lightness(baseColor.lightness() + 35).hex();
   }
