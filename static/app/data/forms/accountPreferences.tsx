@@ -35,13 +35,13 @@ function ThemeColorOption(props: React.ComponentProps<typeof components.Option>)
       {...props}
       data={{
         ...data,
-        leadingItems: isColorValue ? (
+        trailingItems: isColorValue ? (
           <Fragment>
+            {data.trailingItems}
             <ColorPreview color={data.value} />
-            {data.leadingItems}
           </Fragment>
         ) : (
-          data.leadingItems
+          data.trailingItems
         ),
       }}
     />
