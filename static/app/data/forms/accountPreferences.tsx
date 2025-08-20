@@ -111,7 +111,7 @@ const formGroups: JsonFormObject[] = [
           {value: 'default', label: t('Default')},
           {value: '#809848', label: t('Squashed Bug')},
           {value: '#f7b538', label: t('Rubber Ducky')},
-          {value: '#FFDDE2', label: t('Cherry Blossom')},
+          {value: '#FFDDE2', label: t('Starfish')},
           {value: '#6A7FDB', label: t('Tech Bro')},
           {value: 'custom', label: t('Custom')},
         ],
