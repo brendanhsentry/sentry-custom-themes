@@ -223,6 +223,7 @@ class UserSerializer(Serializer):
                 "prefersStackedNavigation": options.get("prefers_stacked_navigation"),
                 "prefersChonkUI": options.get("prefers_chonk_ui", False),
                 "customTheme": options.get("custom_theme"),
+                "enableGradient": options.get("enable_gradient", False),
             }
 
             d["flags"] = {"newsletter_consent_prompt": bool(obj.flags.newsletter_consent_prompt)}

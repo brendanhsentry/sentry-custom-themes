@@ -72,6 +72,7 @@ class UserOptionsSerializer(serializers.Serializer[UserOption]):
     prefersNextjsInsightsOverview = serializers.BooleanField(required=False)
     prefersStackedNavigation = serializers.BooleanField(required=False)
     prefersChonkUI = serializers.BooleanField(required=False)
+    enableGradient = serializers.BooleanField(required=False)
 
 
 class BaseUserSerializer(CamelSnakeModelSerializer[User]):
@@ -244,6 +245,7 @@ class UserDetailsEndpoint(UserEndpoint):
             "prefersNextjsInsightsOverview": "prefers_nextjs_insights_overview",
             "prefersChonkUI": "prefers_chonk_ui",
             "customTheme": "custom_theme",
+            "enableGradient": "enable_gradient",
         }
 
         options_result = serializer_options.validated_data
