@@ -4,6 +4,7 @@ import {AnimatePresence, motion} from 'framer-motion';
 
 import useResizable from 'sentry/utils/useResizable';
 import {useSyncedLocalStorageState} from 'sentry/utils/useSyncedLocalStorageState';
+import {useUser} from 'sentry/utils/useUser';
 import {
   NAV_SECONDARY_SIDEBAR_DATA_ATTRIBUTE,
   SECONDARY_SIDEBAR_MAX_WIDTH,
@@ -22,6 +23,7 @@ import {
 import {useActiveNavGroup} from 'sentry/views/nav/useActiveNavGroup';
 
 export function SecondarySidebar() {
+  const user = useUser();
   const {currentStepId} = useStackedNavigationTour();
   const stepId = currentStepId ?? StackedNavigationTour.ISSUES;
   const resizableContainerRef = useRef<HTMLDivElement>(null);
@@ -56,6 +58,7 @@ export function SecondarySidebar() {
       id={stepId}
       description={STACKED_NAVIGATION_TOUR_CONTENT[stepId].description}
       title={STACKED_NAVIGATION_TOUR_CONTENT[stepId].title}
+      enableGradient={user?.options?.enableGradient ?? false}
     >
       <ResizeWrapper
         ref={resizableContainerRef}
@@ -89,12 +92,18 @@ export function SecondarySidebar() {
   );
 }
 
-const SecondarySidebarWrapper = styled(NavTourElement)`
+const SecondarySidebarWrapper = styled(NavTourElement)<{enableGradient: boolean}>`
   background: ${p =>
     p.theme.isChonk
       ? p.theme.background
       : p.theme.isCustomTheme
-        ? p.theme.purple100
+        ? p.enableGradient
+          ? `linear-gradient(
+        120.35deg,
+          ${p.theme.purple100} 0.32%,
+          ${p.theme.surface200} 99.69%
+        )`
+          : p.theme.purple100
         : p.theme.surface200};
   border-right: 1px solid
     ${p => (p.theme.isChonk ? p.theme.border : p.theme.translucentGray200)};

@@ -12,6 +12,7 @@ import {chonkStyled} from 'sentry/utils/theme/theme.chonk';
 import {withChonk} from 'sentry/utils/theme/withChonk';
 import useOrganization from 'sentry/utils/useOrganization';
 import {useSyncedLocalStorageState} from 'sentry/utils/useSyncedLocalStorageState';
+import {useUser} from 'sentry/utils/useUser';
 import {PRIMARY_SIDEBAR_WIDTH, SECONDARY_SIDEBAR_WIDTH} from 'sentry/views/nav/constants';
 import {useNavContext} from 'sentry/views/nav/context';
 import {OrgDropdown} from 'sentry/views/nav/orgDropdown';
@@ -22,6 +23,7 @@ import {useCollapsedNav} from 'sentry/views/nav/useCollapsedNav';
 
 export function Sidebar() {
   const organization = useOrganization();
+  const user = useUser();
   const {isCollapsed: isCollapsedState} = useNavContext();
 
   // Avoid showing superuser UI on certain organizations
@@ -51,6 +53,7 @@ export function Sidebar() {
         role="navigation"
         aria-label="Primary Navigation"
         tourIsActive={currentStepId !== null}
+        enableGradient={user?.options?.enableGradient ?? false}
       >
         <SidebarHeader isSuperuser={showSuperuserWarning}>
           <OrgDropdown />
@@ -88,7 +91,7 @@ export function Sidebar() {
   );
 }
 
-const SidebarWrapper = styled('div')<{tourIsActive: boolean}>`
+const SidebarWrapper = styled('div')<{enableGradient: boolean; tourIsActive: boolean}>`
   width: ${PRIMARY_SIDEBAR_WIDTH}px;
   padding: ${space(1.5)} 0 ${space(1)} 0;
   border-right: 1px solid
@@ -97,7 +100,13 @@ const SidebarWrapper = styled('div')<{tourIsActive: boolean}>`
     p.theme.isChonk
       ? p.theme.background
       : p.theme.isCustomTheme
-        ? p.theme.purple200
+        ? p.enableGradient
+          ? `linear-gradient(
+        120.35deg,
+          ${p.theme.purple200} 0.32%,
+          ${p.theme.surface300} 99.69%
+        )`
+          : p.theme.purple200
         : p.theme.surface300};
   display: flex;
   flex-direction: column;

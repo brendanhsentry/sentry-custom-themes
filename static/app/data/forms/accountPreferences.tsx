@@ -154,6 +154,14 @@ const formGroups: JsonFormObject[] = [
           return [];
         },
       },
+      {
+        name: 'enableGradient',
+        type: 'boolean',
+        label: t('Enable Gradient Background'),
+        visible: ({model}) => model?.getValue('customTheme') !== 'default',
+        help: t('Enable gradient background effects in the navigation sidebar'),
+        getData: transformOptions,
+      },
     ],
   },
   {

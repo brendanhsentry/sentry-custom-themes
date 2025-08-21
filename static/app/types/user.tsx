@@ -59,6 +59,7 @@ export interface User extends Omit<AvatarUser, 'options'> {
     theme: 'system' | 'light' | 'dark' | 'custom';
     timezone: string;
     customTheme?: string;
+    enableGradient?: boolean;
   };
   permissions: Set<string>;
   authenticators?: UserEnrolledAuthenticator[];
